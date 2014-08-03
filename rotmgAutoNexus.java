@@ -65,7 +65,6 @@ public class rotmgAutoNexus extends JFrame implements ActionListener {
 		PointerInfo a = MouseInfo.getPointerInfo();
 		int x = (int) MouseInfo.getPointerInfo().getLocation().getX();
 		int y = (int) MouseInfo.getPointerInfo().getLocation().getY();
-		
 		Color color = robot.getPixelColor(x, y);
 		int red = color.getRed();
 		int green = color.getGreen();
@@ -76,13 +75,13 @@ public class rotmgAutoNexus extends JFrame implements ActionListener {
 		a = MouseInfo.getPointerInfo();
 		x = (int) MouseInfo.getPointerInfo().getLocation().getX();
 		y = (int) MouseInfo.getPointerInfo().getLocation().getY();
-		
+		int nred, ngreen, nblue;
+		text.setText("Current coordinates are at " + x + " " + y + ".");
 		while (true) {
-			text.setText("Current coordinates are at " + x + " " + y + ".");
 			color = robot.getPixelColor(x, y);
-			int nred = color.getRed();
-			int ngreen = color.getGreen();
-			int nblue = color.getBlue();
+			nred = color.getRed();
+			ngreen = color.getGreen();
+			nblue = color.getBlue();
 			if (
 				nred - 3 <= red && red <= nred + 3
 				&&
@@ -97,10 +96,9 @@ public class rotmgAutoNexus extends JFrame implements ActionListener {
 					robot.keyRelease('R');
 				}
 				text.setText("You've been saved :)");
-				repaint();
-				Wait(5000);
+				Wait(20000);
+				text.setText("Current coordinates are at " + x + " " + y + ".");
 			}
-			Wait(10);
 		}
 	}
 	
