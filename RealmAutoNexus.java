@@ -30,7 +30,7 @@ class Pixel implements Runnable {
 	Pixel(String name, int _red, int _green, int _blue, int _x, int _y) {
 		threadName = name;
 		red = _red; green = _green; blue = _blue; x = _x; y = _y;
-		System.out.println("Creating " + threadName + " thread.");
+		// System.out.println("Creating " + threadName + " thread.");
 	}
 	private boolean alike(int first, int second) {
 		if (first - 3 <= second && second <= first + 3) {
@@ -53,19 +53,19 @@ class Pixel implements Runnable {
 		}
 	}
 	private void FuckOFF() {
-		for (int i = 0; i < 20; ++i) {
+		for (int i = 0; i < 2; ++i) {
 			robot.keyPress(KeyEvent.VK_ENTER);
 			robot.keyRelease(KeyEvent.VK_ENTER);
 			robot.keyPress('R');
 			robot.keyRelease('R');
 		}
-		System.out.println("You were saved :)");
+		// System.out.println("You were saved :)");
 	}
 	public void run() {
 		StartRobot();
 		Color color;
 		while (true) {
-			System.out.println("Working " + threadName);
+			// System.out.println("Working " + threadName);
 			color = robot.getPixelColor(x, y);
 			int _red = color.getRed();
 			int _green = color.getGreen();
@@ -78,7 +78,7 @@ class Pixel implements Runnable {
 		}
 	}	 
 	public void start() {
-		System.out.println("Starting " + threadName + " thread");
+		// System.out.println("Starting " + threadName + " thread");
 		if (T == null) {
 			T = new Thread(this, threadName);
 			T.start();
@@ -86,7 +86,25 @@ class Pixel implements Runnable {
 	}
 }
 
-public class RealmAutoNexus {
+public class RealmAutoNexus extends JFrame implements ActionListener {
+	private static final long serialVersionUID = 1L;
+	private Robot robot;
+	JLabel text = new JLabel();
+	JButton on = new JButton("ON");
+	JButton off = new JButton("OFF");
+
+	private Color color;
+	private PointerInfo a;
+	private int x, y, red, green, blue;
+	private boolean started = false;
+	
+	private void StartRobot() {
+		try {
+			robot = new Robot();
+		} catch (AWTException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	private static void Sleep(int time) {
 		try {
 			Thread.sleep(time);
@@ -94,14 +112,28 @@ public class RealmAutoNexus {
 			Thread.currentThread().interrupt();
 		}
 	}
-	public static void main(String[] args) throws Exception {
-		Color color;
-		PointerInfo a;
-		int x, y, red, green, blue;
-		Robot robot = new Robot();
+	public static void main(String[] args) {
+		new RealmAutoNexus().setVisible(true);
+	}
+	private RealmAutoNexus() {
+		super("AutoNexus");
+		setSize(220, 80);
+		setResizable(false);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setVisible(true);
+		setLayout(new FlowLayout());
 		
-		System.out.println("Put the cursor on the grey");
-		Sleep(5000);
+		on.setActionCommand("ON");
+		off.setActionCommand("OFF");
+		on.addActionListener(this);
+		off.addActionListener(this);
+		add(text);
+		
+		StartRobot();
+		
+		text.setText("Put the cursor on the grey");
+		Sleep(3000);
 		
 		a = MouseInfo.getPointerInfo();
 		x = (int) MouseInfo.getPointerInfo().getLocation().getX();
@@ -111,16 +143,32 @@ public class RealmAutoNexus {
 		green = color.getGreen();
 		blue = color.getBlue();
 		
-		System.out.println("Put the cursor on the health bar");
-		Sleep(5000);
+		text.setText("Put the cursor on the health bar");
+		Sleep(3000);
 		
 		a = MouseInfo.getPointerInfo();
 		x = (int) MouseInfo.getPointerInfo().getLocation().getX();
 		y = (int) MouseInfo.getPointerInfo().getLocation().getY();
-		
-		for (int i = 1; i <= 10; ++i) {
-			new Pixel("Process" + i, red, green, blue, x, y).start();
-			Sleep(100);
+
+		text.setText("Press ON when you're ready :)");
+		Sleep(1000);
+		add(on, BorderLayout.SOUTH);
+		add(off, BorderLayout.SOUTH);
+	}
+	public void actionPerformed(ActionEvent event) {
+		String which = event.getActionCommand();
+		if (which.equals("ON") && started == false) {
+			started = true;
+			text.setText("The hack is ON. Good luck");
+			repaint();
+			for (int i = 1; i <= 10; ++i) {
+				new Pixel("Process " + i, red, green, blue, x, y).start();
+				Sleep(100);
+			}
+		} else if (which.equals("OFF")) {
+			text.setText("The hack is OFF. Goodbye");
+			repaint();
+			System.exit(1);
 		}
 	}
 }
